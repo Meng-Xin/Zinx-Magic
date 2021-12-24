@@ -1,7 +1,6 @@
 package znet
 
 import (
-	"errors"
 	"fmt"
 	"net"
 	"zinx-lwh/ziface"
@@ -16,17 +15,16 @@ type Server struct {
 	IP string
 	//服务器监听的端口
 	Port int
+	//给当前Server添加一个Router,serve注册的链接对应的处理业务
+	Router ziface.IRouter
 }
-//TODO CallBackToClient 定义当前客户端链接的所绑定的handle api(目前这个handle是写死的，以后优化应该由用户自定义handle方法)
-func CallBackToClient (conn *net.TCPConn,data []byte,cnt int) error{
-	//回显的业务
-	fmt.Println("[Conn Handle] CallBackToClient...")
-	if _,err := conn.Write(data[:cnt]); err != nil{
-		fmt.Println("write back buf err:",err)
-		return errors.New("CallBackToClient error")
-	}
-	return nil
+// AddRouter 路由功能：给当前的服务注册一个路由方法，供客户端的链接处理使用
+func (s *Server) AddRouter (router ziface.IRouter)  {
+	s.Router = router
+	fmt.Println("Add Router Succ!!")
 }
+
+
 
 // Start 启动服务器
 func (s *Server)Start()  {
@@ -56,7 +54,7 @@ func (s *Server)Start()  {
 				continue
 			}
 			//处理新连接的业务方法和conn进行绑定 得到我们的链接模块
-			dealConn := NewConnection(conn,cid,CallBackToClient)
+			dealConn := NewConnection(conn,cid,s.Router)
 			cid++
 
 			//启动当前连接业务的处理方法
@@ -86,6 +84,7 @@ func NewServer(name string) ziface.IServer {
 		IPVersion: "tcp4",
 		IP: "0.0.0.0",
 		Port: 8999,
+		Router: nil,
 	}
 	return s
 }

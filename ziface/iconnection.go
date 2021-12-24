@@ -16,7 +16,7 @@ type  IConnection interface {
 	// GetConnID 获取当前连接模块的连接ID
 	GetConnID() uint32
 
-	// RemoteAddr 获取远程客户端的TCP状态 IP PORT
+	// RemoteAddr 获取远程客户端的TCP状态 IP port
 	RemoteAddr() net.Addr
 
 	// Send 发送数据，将数据发送给远程客户端
