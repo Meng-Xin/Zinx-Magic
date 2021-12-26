@@ -31,7 +31,7 @@ func (s *Server) AddRouter (router ziface.IRouter)  {
 func (s *Server)Start()  {
 	fmt.Printf("[Zinx] Server Name : %s,Listenner at IP : %s,Port:%d is strating",
 		utils.GlobalObject.Name,utils.GlobalObject.Host,utils.GlobalObject.TcpPort)
-	fmt.Println("[Zinx] Version %s, MaxConn:%d,MaxPackeetSize:%d\n",
+	fmt.Printf("[Zinx] Version %s, MaxConn:%d,MaxPackeetSize:%d\n",
 		utils.GlobalObject.Version,utils.GlobalObject.MaxConn,utils.GlobalObject.MaxPackageSize)
 	go func() {
 		//1、获取一个TCP的Addr
