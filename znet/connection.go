@@ -19,8 +19,8 @@ type Connection struct {
 
 	//告知当前连接已经退出的/停止 Channel
 	ExitChan chan bool
-	//该链接处理的方法Router
-	Router ziface.IRouter
+	//消息的管理MsgID 和对应的处理业务API关系
+	MsgHandler ziface.IMsgHandle
 }
 
 func (c *Connection)StartReader()  {
@@ -52,7 +52,7 @@ func (c *Connection)StartReader()  {
 			fmt.Println("unpack error:",err)
 			break
 		}
-		//根据dataLen 再次读取Data，放在msg.Data中
+		//根据dataLen 再次读取Data，放在msg.Data中 TODO 感觉有优化空间，这个data写法
 		var data []byte
 		if msg.GetDataLen() > 0 {
 			data = make([]byte,msg.GetDataLen())
@@ -68,12 +68,9 @@ func (c *Connection)StartReader()  {
 			conn: c,
 			msg: msg,
 		}
-		//执行注册的路由方法
-		go func(request ziface.IRequest) {
-			c.Router.PreHandle(request)
-			c.Router.Handle(request)
-			c.Router.PostHandle(request)
-		}(&req)
+		//从路由中，找到注册绑定的Conn对应的router调用
+		//根据绑定好的MsgID 找到对应处理api业务 执行
+		go c.MsgHandler.DoMsgHandler(&req)
 	}
 }
 // Start 启动链接 让当前的连接准备开始工作
@@ -134,11 +131,11 @@ func (c *Connection)SendMsg(msgId uint32, data []byte) error  {
 }
 
 // NewConnection 初始化链接模块的方法
-func NewConnection(conn *net.TCPConn,connID uint32,router ziface.IRouter) *Connection  {
+func NewConnection(conn *net.TCPConn,connID uint32,msgHandler ziface.IMsgHandle) *Connection  {
 	c := &Connection{
 		Conn:conn,
 		ConnID: connID,
-		Router: router,
+		MsgHandler:msgHandler,
 		isClosed: false,
 		ExitChan: make(chan bool ,1),
 	}
