@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"net"
+	"zinx-lwh/utils"
 	"zinx-lwh/ziface"
 )
 
@@ -71,9 +72,15 @@ func (c *Connection) StartReader() {
 			conn: c,
 			msg:  msg,
 		}
-		//从路由中，找到注册绑定的Conn对应的router调用
-		//根据绑定好的MsgID 找到对应处理api业务 执行
-		go c.MsgHandler.DoMsgHandler(&req)
+		if utils.GlobalObject.WorkerPoolSize > 0 {
+			//已经开启了工作池机制，将消息发送给workerPool 处理即可
+			c.MsgHandler.SendMsgToTaskQueue(&req)
+		} else {
+			//从路由中，找到注册绑定的Conn对应的router调用
+			//根据绑定好的MsgID 找到对应处理api业务 执行
+			go c.MsgHandler.DoMsgHandler(&req)
+		}
+
 	}
 }
 
@@ -116,12 +123,12 @@ func (c *Connection) Stop() {
 	}
 	c.isClosed = true
 	//关闭socket
-	if err := c.Conn.Close();err != nil{
-		fmt.Println("server conn close err :",err)
+	if err := c.Conn.Close(); err != nil {
+		fmt.Println("server conn close err :", err)
 	}
 
 	//关闭Writer 业务，告知Writer 关闭
-	c.ExitChan<-true
+	c.ExitChan <- true
 	//回收资源
 	close(c.ExitChan)
 	close(c.msgChan)
