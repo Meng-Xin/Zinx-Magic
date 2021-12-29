@@ -128,8 +128,11 @@ func (c *Connection) Start() {
 	fmt.Println("Conn Start() ...ConnID=", c.ConnID)
 	//启动从当前链接的读取数据业务
 	go c.StartReader()
-	//TODO 启动从当前链接写数据的业务
+	// 启动从当前链接写数据的业务
 	go c.StartWriter()
+
+	//按照开发者传递进来的 创建链接之后需要调用的处理业务，执行对应的Hook方法
+	c.TcpServer.CallOnConnStart(c)
 }
 
 // Stop  停止链接 结束当前连接的工作
@@ -140,6 +143,8 @@ func (c *Connection) Stop() {
 		return
 	}
 	c.isClosed = true
+	//调用开发者注册的，销毁链接之前，需要执行对用的Hook方法
+	c.TcpServer.CallOnConnStop(c)
 	//关闭socket
 	c.Conn.Close()
 	//关闭Writer 业务，告知Writer 关闭
