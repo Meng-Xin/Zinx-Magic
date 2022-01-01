@@ -40,7 +40,6 @@ func NewGrid(gID, minX, maxX, minY, maxY int) *Grid {
 
 // Add 给格子添加一个玩家
 func (g *Grid) Add(playerID int) {
-	//fmt.Println("到底是哪里出问题？")
 	g.pIDLock.Lock()
 	defer g.pIDLock.Unlock()
 	g.playerIDs[playerID] = true
