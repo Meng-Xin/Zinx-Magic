@@ -125,7 +125,7 @@ func (s *Server) SetOnConnStop(hookFunc func(conn ziface.IConnection)) {
 
 // CallOnConnStart 调用钩子函数的方法
 func (s *Server) CallOnConnStart(connection ziface.IConnection) {
-	if s.OnConnStop != nil {
+	if s.OnConnStart != nil {
 		fmt.Println("----->Call OnConnStart() ...")
 		s.OnConnStart(connection)
 	}

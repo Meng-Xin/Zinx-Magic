@@ -1,6 +1,8 @@
 package core
 
-import "sync"
+import (
+	"sync"
+)
 
 type WorldManager struct {
 	//AOIManager 当前世界地图AOI 的管理模块
@@ -13,15 +15,14 @@ type WorldManager struct {
 
 // WorldMgrObj 提供一个对外开放的世界管理模块的句柄
 var WorldMgrObj *WorldManager
-//初始化方法
-func init()  {
+//初始化方法	//初始化Player集合		//创建世界AOI地图规划
+func init() {
 	WorldMgrObj = &WorldManager{
-		//创建世界AOI地图规划
-		AoiMgr: NewAOIManager(AOI_MIN_X,AOI_MAX_X,AOI_CNTS_X,AOI_MIN_Y,AOI_MAX_Y,AOI_CNTS_Y),
-		//初始化Player集合
-		Players :make(map[int32]*Player),
+		Players: make(map[int32]*Player),
+		AoiMgr:  NewAOIManager(AOI_MIN_X, AOI_MAX_X, AOI_CNTS_X, AOI_MIN_Y, AOI_MAX_Y, AOI_CNTS_Y),
 	}
 }
+
 // AddPlayer 添加一个 玩家
 func (wm *WorldManager)AddPlayer(player *Player)  {
 	wm.pLock.Lock()
@@ -51,7 +52,7 @@ func (wm *WorldManager) GetPlayerByPid (pid int32) *Player {
 	return wm.Players[pid]
 }
 // GetAllPlayers 获取全部的在线玩家
-func (wm *WorldManager) GetAllPlayers (pid int32) []*Player {
+func (wm *WorldManager) GetAllPlayers () []*Player {
 	wm.pLock.RLock()
 	defer wm.pLock.RUnlock()
 

@@ -164,11 +164,12 @@ func (m *AOIManager) GetPidByGid(gID int) (playerIDs []int) {
 }
 
 // AddToGridByPos 通过坐标将Player添加到一个格子中
-func (m *AOIManager) AddToGridByPos(pID int, x, y float32) (playerIDs []int) {
-	gID := m.GetGidByPos(x, y)
-	grid := m.grids[gID]
-	grid.Add(pID)
-	return
+func (m *AOIManager) AddToGridByPos(pID int, x, y float32)  {
+	fmt.Println("能进来吗？")
+	gID := m.GetGidByPos(x,y)
+	grID := m.grids[gID]
+	grID.Add(pID)
+	fmt.Println("能否结束？")
 }
 
 //
