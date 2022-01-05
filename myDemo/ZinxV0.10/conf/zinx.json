@@ -1,7 +1,7 @@
 {
   "Name": "Zinx v0.10 demoServerApp",
   "Host": "127.0.0.1",
-  "Port": 8999,
+  "TcpPort": 8999,
   "MaxConn": 3,
   "WorkerPoolSize": 10
 }
